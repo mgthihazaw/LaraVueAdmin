@@ -163,7 +163,10 @@
           	this.$Progress.start()
           	this.form.post('/api/user')
         .then(res => {
-         this.users.unshift(res.data)
+         this.users.data.unshift(res.data)
+         if(this.users.data.length>=10){
+         	this.users.data.splice(10,1)
+         }
          this.$Progress.finish();
          $('#addNewModal').modal('hide'); 
          toast.fire({

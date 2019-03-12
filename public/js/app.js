@@ -2048,7 +2048,11 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$Progress.start();
       this.form.post('/api/user').then(function (res) {
-        _this2.users.unshift(res.data);
+        _this2.users.data.unshift(res.data);
+
+        if (_this2.users.data.length >= 10) {
+          _this2.users.data.splice(10, 1);
+        }
 
         _this2.$Progress.finish();
 
