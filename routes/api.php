@@ -8,3 +8,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/user','api\UserController');
+Route::get('/profile','api\UserController@profile');

@@ -28,6 +28,24 @@ const toast = swal.mixin({
 });
 window.toast=toast;
 
+window.EventBus = new Vue();
+
+
+Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue').default
+);
+
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue').default
+);
+
 
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
