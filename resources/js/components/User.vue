@@ -198,7 +198,7 @@
 				    })
 	            })
             .catch(err=>{
-            	
+            	 this.$Progress.fail();
             	toast.fire({
 				  type: 'error',
 				  title: err.response.data.message,
@@ -221,7 +221,7 @@
 				    })
 	            })
             .catch(err=>{
-            	
+            	 this.$Progress.fail();
             	toast.fire({
 				  type: 'error',
 				  title: err.response.data.message,

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\User;
+// use Intervention\Image\Image;
 
 class UserController extends Controller
 {
@@ -35,7 +36,7 @@ class UserController extends Controller
         $this->validate($request,[
             'name' =>'required|string|max:191',
             'email' =>'required|string|email|max:191|unique:users',
-            'password' =>'required|string|min:8',
+            'password' =>'required|string|min:6',
             
         ]);
          $user=User::create([
@@ -74,7 +75,7 @@ class UserController extends Controller
         $this->validate($request,[
             'name' =>'required|string|max:191',
             'email' =>'required|string|email|max:191|unique:users,email,'.$user->id,
-            'password' =>'required|string|min:8',
+            'password' =>'required|string|min:6',
             
         ]);
         $request['password']=Hash::make($request['password']);
@@ -100,5 +101,42 @@ class UserController extends Controller
 
     public function profile(){
         return auth('api')->user();
+    }
+
+    public function updateProfile(Request $request){
+         $user=auth('api')->user();
+         $this->validate($request,[
+            'name' =>'required|string|max:191',
+            'email' =>'required|string|email|max:191|unique:users,email,'.$user->id,
+            'password' =>'sometimes|required|string|min:6',
+            
+        ]);
+        
+        $currentPhoto=$user->photo;
+        if($request->photo!=$currentPhoto){
+            $name=time().'.'.explode('/',explode(':',substr($request->photo,0,strpos($request->photo,';')))[1])[1];
+            \Image::make($request->photo)->save(public_path('img/profile/').$name);
+            $request['photo']=$name;
+
+
+        }
+        if($request['password']){
+            $request['password']=Hash::make($request['password']);
+        }
+
+        $userPhoto=public_path('img/profile/').$currentPhoto;
+        if(file_exists($userPhoto)){
+            @unlink($userPhoto);
+        }
+        
+        
+        
+        
+        $user->update($request->all());
+
+
+         return ['message'=>'Profile update successfully'];
+
+
     }
 }

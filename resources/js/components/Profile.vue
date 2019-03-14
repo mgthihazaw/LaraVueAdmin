@@ -22,11 +22,11 @@
                     <div class="card card-widget widget-user">
                       <!-- Add the bg color to the header using any of the bg-* classes -->
                       <div class="widget-user-header text-white" style="background-image:url('/img/bgg4.jpg')">
-                        <h3 class="widget-user-username blue">Elizabeth Pierce</h3>
-                        <h5 class="widget-user-desc">Web Designer</h5>
+                        <h3 class="widget-user-username ">{{form.name}}</h3>
+                        <h5 class="widget-user-desc">{{form.bio}}</h5>
                       </div>
                       <div class="widget-user-image">
-                        <img class="img-circle" src="/img/profile6.png" alt="User Avatar">
+                        <img class="img-circle" :src="userprofile" alt="User Avatar">
                       </div>
                       <div class="card-footer navblue">
                         <div class="row">
@@ -113,13 +113,13 @@
                  
 
                   <div class="tab-pane active show" id="settings">
-                    <form class="form-horizontal">
+                    <form class="form-horizontal" enctype="multipart/form-data">
                        
                       <div class="modal-body">
                         
                             <!---- Name------>
                         <div class="form-group">
-                          
+                          <label for="name">Name</label>
                           <input v-model="form.name" type="text" name="name" placeholder="UserName"
                             class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
                           <has-error :form="form" field="name"></has-error>
@@ -128,6 +128,7 @@
 
                         <!---- Email------>
                         <div class="form-group">
+                            <label for="email">Email</label>
                         <input v-model="form.email" type="text" name="email" placeholder="Email"
                             class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
                           <has-error :form="form" field="email"></has-error>
@@ -136,31 +137,23 @@
 
                         <!---- Bio------>
                         <div class="form-group">
-                        <textarea v-model="form.bio" type="text" name="bio" placeholder="Short Bio for user(optinal)"
+                            <label for="bio">Experience</label>
+                        <textarea v-model="form.bio" type="text" name="bio" placeholder="Experience"
                             class="form-control" :class="{ 'is-invalid': form.errors.has('bio') }">
                         </textarea>
                           <has-error :form="form" field="bio"></has-error>
                         </div>
                         <!---- Bio------>
 
-                         <!---- Type------>
-                        <div class="form-group">
-                           <select name="type" v-model="form.type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('type') }">
-                            <option value="">Select User Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="user">Standard</option>
-                            <option value="author">Author</option>
-                           </select>
-                           <has-error :form="form" field="type"></has-error>
-                        </div>
-                        <!---- Type------>
+
 
                         <!---------Photo-------->
                         <div class="form-group">
-                            <label for="Choose Photo">Image</label>
+                            <label for="photo">Image</label>
                             <div class="input-group">
                               <div class="custom-file">
                                 <input type="file" class="custom-file-input" id="photo"
+                                 @change="updateProfile"
                                 >
                                 <label class="custom-file-label" for="photo">Choose Image</label>
                               </div>
@@ -171,8 +164,8 @@
 
                         <!---- Password------>
                         <div class="form-group">
-                          
-                          <input v-model="form.password" type="password" name="password" placeholder="Password"
+                          <label for="password">Password</label>
+                          <input v-model="form.password" type="password" name="password" placeholder="Password" @keydown.space.prevent
                             class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                           <has-error :form="form" field="password"></has-error>
                         </div>
@@ -183,7 +176,7 @@
                       </div>
                       <div class="modal-footer">
                         
-                        <button type="submit" class="btn btn-primary btn-block" >Update</button>
+                        <button type="submit" class="btn btn-primary btn-block" @click.prevent="updateInfo">Update</button>
                       </div>
 
               
@@ -206,6 +199,7 @@
     export default {
         data(){
             return {
+                userprofile:'',
                 form:new form({
                        id:'',
                       name: '',
@@ -219,8 +213,64 @@
             }
         },
         created() {
-           axios.get('/api/profile')
-           .then(res=>this.form.fill(res.data))
-        }
+          
+        
+           this.getInfo();
+
+           EventBus.$on('profileUpdated',()=>{
+            this.getInfo();
+           })
+
+
+        },
+        methods:{
+            updateProfile(e){
+                 
+
+               var file = e.target.files[0];
+               // console.log(file)
+               var reader = new FileReader();
+               if(file['size']<2111775){
+                reader.onloadend = (file)=> {
+               // console.log('RESULT', reader.result)
+                this.form.photo=reader.result;
+               }
+               reader.readAsDataURL(file);
+
+               }else{
+                  toast.fire({
+                  type: 'error',
+                  title: 'Your image is more than 2MB',
+                    })
+               }
+               
+               
+             
+              
+            },
+            updateInfo(){
+                this.$Progress.start()
+                this.form.put('api/profile')
+                .then(res=>{
+                  
+                   toast.fire({
+                  type: 'success',
+                  title: res.data.message,
+                    })
+                  this.$Progress.finish();
+                  EventBus.$emit('profileUpdated')
+                })
+                .catch(err=>{
+                    this.$Progress.fail();
+                })
+            },
+            getInfo(){
+                 axios.get('/api/profile')
+                 .then(res=>{this.form.fill(res.data)
+                 this.userprofile='/img/profile/'+res.data.photo})
+
+            }
+        },
+        
     }
 </script>
