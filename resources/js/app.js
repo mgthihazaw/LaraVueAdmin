@@ -9,6 +9,9 @@ window.form=Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
+import Gate from './Gate.js';
+window.gate=new Gate(window.user)
+
 import VueProgressBar from 'vue-progressbar';
 
 
@@ -44,6 +47,11 @@ Vue.component(
 Vue.component(
     'passport-personal-access-tokens',
     require('./components/passport/PersonalAccessTokens.vue').default
+);
+
+Vue.component(
+    'notfound',
+    require('./components/notfound.vue').default
 );
 
 

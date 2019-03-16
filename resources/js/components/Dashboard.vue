@@ -2,14 +2,10 @@
 	
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">dashboardComponent</div>
-
-                    <div class="card-body">
-                        I'm an dashboard component.
-                    </div>
-                </div>
+            <div class="col-md-12 pt-5">
+                
+                    <notfound></notfound>
+                
             </div>
         </div>
     </div>

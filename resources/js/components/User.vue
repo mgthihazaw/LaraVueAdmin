@@ -1,7 +1,7 @@
 <template>
 	
     <div class="container-fluid">
-        <div class="col-md-12 mt-4">
+        <div class="col-md-12 mt-4" v-if="gate">
             <div class="card">
               <div class="card-header">
                 <h3 class="card-title">
@@ -50,6 +50,9 @@
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
+          </div>
+          <div v-if="!gate">
+            <notfound></notfound>
           </div>
 
 
@@ -143,6 +146,7 @@
     export default {
     	data(){
     		return {
+          gate:gate.isAdmin(),
     			editMode:false,
     			users:[],
                 form:new form({
@@ -169,11 +173,14 @@
     			this.form.fill(user)
     		},
     		loadUsers(){
-              axios.get('api/user')
+          if(gate.isAdmin()){
+             axios.get('api/user')
               .then(res=>{
-              	this.users=res.data
-              	
+                this.users=res.data
+                
               })
+          }
+             
     		},
     		submit(){
               if(!this.editMode){
